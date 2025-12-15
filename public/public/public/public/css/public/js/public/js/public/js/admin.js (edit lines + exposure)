@@ -1,0 +1,48 @@
+const LINES_URL=`https://raw.githubusercontent.com/YOUR-USERNAME/my-sportsbook/main/public/data/lines.json`;
+let lines=[];
+async function load(){
+  lines=await fetch(LINES_URL).then(r=>r.json());
+  renderTable();
+  calcExposure();
+}
+function renderTable(){
+  const t=document.getElementById('linesTable');
+  t.innerHTML='<tr><th>Away</th><th>Home</th><th>Time</th><th>Away ML</th><th>Home ML</th><th>Spread</th><th>Total</th></tr>';
+  lines.forEach((g,i)=>{
+    const r=t.insertRow();
+    r.innerHTML=`
+      <td>${g.away}</td><td>${g.home}</td><td>${g.time}</td>
+      <td contenteditable onblur="saveCell(${i},'awayML',this)">${g.awayML}</td>
+      <td contenteditable onblur="saveCell(${i},'homeML',this)">${g.homeML}</td>
+      <td contenteditable onblur="saveCell(${i},'spread',this)">${g.spread}</td>
+      <td contenteditable onblur="saveCell(${i},'total',this)">${g.total}</td>`;
+  });
+}
+function saveCell(i,field,el){
+  lines[i][field]=el.textContent;
+  pushJSON(); // commit to github
+}
+async function pushJSON(){
+  const meta=await fetch(`https://api.github.com/repos/YOUR-USERNAME/my-sportsbook/contents/public/data/lines.json`,
+    {headers:{'Authorization':'token YOUR_GITHUB_PAT'}}).then(r=>r.json());
+  await fetch(`https://api.github.com/repos/YOUR-USERNAME/my-sportsbook/contents/public/data/lines.json`,
+  {method:'PUT',
+   headers:{'Authorization':'token YOUR_GITHUB_PAT','Content-Type':'application/json'},
+   body:JSON.stringify({message:'line move',content:btoa(JSON.stringify(lines,null,2)),sha:meta.sha})});
+}
+function calcExposure(){
+  // naive: sum of all open risk on each side
+  fetch(`https://raw.githubusercontent.com/YOUR-USERNAME/my-sportsbook/main/public/data/bets.json`)
+    .then(r=>r.json())
+    .then(bets=>{
+      const exp={};
+      bets.filter(b=>!b.graded).forEach(b=>{
+        b.legs.forEach(l=>{
+          const key=`${l.id}-${l.side}`;
+          exp[key]=(exp[key]||0)+b.risk;
+        });
+      });
+      document.getElementById('exposure').textContent=JSON.stringify(exp,null,2);
+    });
+}
+load();
