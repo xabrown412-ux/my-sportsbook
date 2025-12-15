@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bet Slip</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <header>
+    <span id="balance"></span>
+    <button id="logout">Logout</button>
+  </header>
+
+  <h2>Live & Upcoming</h2>
+  <div id="lines"></div>
+
+  <aside id="slip">
+    <h3>Bet Slip (<span id="count">0</span>)</h3>
+    <div id="selections"></div>
+    <label>Stake <input id="stake" type="number" min="1"></label>
+    <label>
+      <input type="radio" name="type" value="credit" checked> Credit
+      <input type="radio" name="type" value="free"> Free Play
+    </label>
+    <button id="place">Place Bet</button>
+    <p id="riskWin"></p>
+  </aside>
+
+  <script src="js/lines.js"></script>
+  <script src="js/betslip.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
