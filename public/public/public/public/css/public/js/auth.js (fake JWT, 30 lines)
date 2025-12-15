@@ -1,0 +1,19 @@
+const USERS = `https://raw.githubusercontent.com/YOUR-USERNAME/my-sportsbook/main/public/data/users.json`;
+
+async function login(ev){
+  ev.preventDefault();
+  const user=document.getElementById('user').value.trim();
+  const pass=document.getElementById('pass').value.trim();
+  const list=await fetch(USERS).then(r=>r.json());
+  const me=list.find(u=>u.user===user && u.pin===pass);
+  if(!me) return msg.textContent='Bad credentials';
+  localStorage.setItem('token', btoa(JSON.stringify(me)));
+  const dest = me.role==='admin' ? 'admin.html' : 'app.html';
+  location=dest;
+}
+if(typeof loginForm!=='undefined') loginForm.onsubmit=login;
+
+function logout(){ localStorage.clear(); location='index.html'; }
+if(document.getElementById('logout')) logout.onclick=logout;
+
+function currentUser(){ return JSON.parse(atob(localStorage.token||'')); }
