@@ -1,0 +1,23 @@
+const LINES=`https://raw.githubusercontent.com/YOUR-USERNAME/my-sportsbook/main/public/data/lines.json`;
+
+let lines=[];
+async function loadLines(){
+  lines=await fetch(LINES).then(r=>r.json());
+  render();
+}
+function render(){
+  const out=document.getElementById('lines');
+  out.innerHTML='';
+  lines.forEach(g=>{
+    const d=document.createElement('div'); d.className='game';
+    d.innerHTML=`
+      <div>${g.away} @ ${g.home}  <small>${g.time}</small></div>
+      <span class="odd" data-id="${g.id}" data-side="awayML">Away ${g.awayML}</span>
+      <span class="odd" data-id="${g.id}" data-side="homeML">Home ${g.homeML}</span>
+      <span class="odd" data-id="${g.id}" data-side="spread">Spread ${g.spread}</span>
+      <span class="odd" data-id="${g.id}" data-side="total">Total ${g.total}</span>`;
+    out.appendChild(d);
+  });
+}
+loadLines();
+setInterval(loadLines,30000); // 30-sec refresh
