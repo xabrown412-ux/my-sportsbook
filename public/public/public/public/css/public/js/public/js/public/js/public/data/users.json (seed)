@@ -1,0 +1,5 @@
+[
+  {"user":"player1","pin":"1234","role":"player","credit":1000,"free":500},
+  {"user":"agent1","pin":"1111","role":"agent"},
+  {"user":"admin","pin":"0000","role":"admin"}
+]
